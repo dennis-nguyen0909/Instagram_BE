@@ -5,7 +5,7 @@ const { generalAuth } = require("../helper");
 dotenv.config();
 const sendEmailGenerateAuth = async (email) => {
     const authRandom = generalAuth();
-    console.log(authRandom)
+
     let transporter = nodemailer.createTransport({
         service: 'Gmail',//chọn service là Gmail nếu ko sẽ sai
         host: "smtp.gmail.com",

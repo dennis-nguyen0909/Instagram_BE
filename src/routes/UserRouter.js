@@ -13,6 +13,12 @@ const UserRouter = (app) => {
     router.post('/auth-mail', UserController.sendMailAuth);
     router.get('/get-detail/:id', UserController.getDetailUser);
     router.post('/log-out', UserController.logoutUser);
+    router.get('/get-all-user', UserController.getAllUser);
+    router.put('/follow/:id', UserController.handleFollow);
+    router.put('/unfollow/:id', UserController.handleUnFollow);
+    router.get('/friends/:id', UserController.getFriends);
+    router.get('/get-user', UserController.getUserByUsername);
+
     return app.use('/api/user', router)
 }
 

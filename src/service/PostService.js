@@ -2,8 +2,8 @@ const Post = require('../model/PostModel')
 const User = require('../model/UserModel')
 require('dotenv').config()
 const { verifyToken } = require('./JwtService');
-const main = require('../index')
-
+const main = require('../index');
+const { Subject, Observer } = require('../designPartern/observer');
 
 module.exports = {
     create: (id, desc, images) => {
@@ -40,15 +40,16 @@ module.exports = {
 
                 // Thêm từ khóa 'await' để đợi cho hàm verifyToken hoàn thành
                 const user = await verifyToken(token);
+
                 if (user !== checkPostExist.userId) {
                     resolve({
-                        EM: 'Not delete',
+                        EM: 'Post is deleted by user post!',
                         EC: 1,
                     })
                 }
                 if (checkPostExist === null) {
                     resolve({
-                        EM: 'POST NOT  exist!!',
+                        EM: 'Post not exist!',
                         EC: 1,
                     })
                 }
@@ -56,7 +57,7 @@ module.exports = {
                 const deletePost = await Post.findByIdAndDelete(idPost);
                 if (deletePost) {
                     resolve({
-                        EM: "Delete Successfully",
+                        EM: "Delete Successfully!",
                         EC: 0,
                     })
                 }
@@ -71,7 +72,7 @@ module.exports = {
                 const post = await Post.findOne({
                     _id: id
                 })
-                console.log(post)
+
                 if (post === null) {
                     resolve({
                         message: "Post is not defined!!",
@@ -133,7 +134,10 @@ module.exports = {
     getAll: () => {
         return new Promise(async (resolve, reject) => {
             try {
-                const getAllPost = await Post.find().sort({ createdAt: -1 }).populate('likes', 'userName avatar');
+                const getAllPost = await Post.find().sort({ createdAt: -1 })
+                    .populate('likes', 'userName avatar')
+                    .populate('comments.postedBy', 'userName email avatar');
+
                 const postsWithUserInfo = await Promise.all(getAllPost.map(async (post) => {
                     // Lấy thông tin người dùng từ userId của bài post
                     const user = await User.findById(post.userId);
@@ -232,8 +236,7 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             try {
                 const post = await Post.findById(postId);
-                console.log(userId)
-                console.log(post?.likes.includes(userId))
+
                 if (!post.likes.includes(userId)) {
                     const post1 = await Post.findByIdAndUpdate(postId, {
                         $addToSet: { likes: userId }
@@ -241,6 +244,7 @@ module.exports = {
                         new: true
                     })
                     const posts = await Post.find().sort({ createdAt: -1 }).populate('likes', 'userName name avatar');
+
                     const filterPost = await Promise.all(posts.map(async (post) => {
                         const user = await User.findById(post.userId);
                         if (user == null) {
@@ -284,6 +288,41 @@ module.exports = {
                         data: post1
                     })
                 }
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }, commentsPost: (postId, userId, comment) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+
+                const postComment = await Post.findByIdAndUpdate(postId, {
+                    $push: { comments: { text: comment, postedBy: userId } }
+                }, { new: true })
+                const post = await Post.findById(postId).populate('comments.postedBy', 'userName email avatar');
+
+                main.io.emit('new-comment2', post.comments)
+                resolve({
+                    code: 200,
+                    message: 'Update comments successfully!',
+                    posts: post,
+
+                })
+            } catch (error) {
+                reject(error)
+            }
+        })
+    },
+    getPostByUser: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const post = await Post.find({ userId: userId }, { new: true })
+                console.log(post)
+                resolve({
+                    code: 200,
+                    message: 'Find ok!!',
+                    data: post
+                })
             } catch (error) {
                 reject(error)
             }

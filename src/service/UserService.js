@@ -9,7 +9,7 @@ module.exports = {
     create: (email, password, userName, fullName, confirmPassword) => {
         return new Promise(async (resolve, reject) => {
             try {
-     
+
                 const checkExistEmail = await User.findOne({
                     email: email
                 })
@@ -108,7 +108,7 @@ module.exports = {
     update: (id, data) => {
         return new Promise(async (resolve, reject) => {
             try {
-   
+
                 const checkUser = await User.findOne({ _id: id })
                 if (checkUser === null) {
                     resolve({
@@ -186,5 +186,129 @@ module.exports = {
 
             }
         })
+    }, getAllUser: () => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const allUser = await User.find();
+                resolve({
+                    EM: 'GET ALL USER',
+                    EC: 0,
+                    data: allUser
+                })
+            } catch (error) {
+                reject(error)
+            }
+        })
+    },
+    handleFollow: (userId, currentUserId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const userCurrent = await User.findById(currentUserId);
+                const user = await User.findById(userId)
+
+                if (!user || !userCurrent) {
+                    resolve({
+                        code: 404,
+                        message: 'User not found!!',
+                    });
+                    return;
+                }
+                if (!user.followers.includes(currentUserId)) {
+                    await user.updateOne({ $addToSet: { followers: currentUserId } })
+                    await userCurrent.updateOne({ $addToSet: { followings: userId } })
+                    const dataUserCurrent = await User.findById(currentUserId);
+                    resolve({
+                        code: 200,
+                        message: 'Follow is successfully!',
+                        data: dataUserCurrent
+                    })
+                } else {
+                    resolve({
+                        code: 404,
+                        message: 'You  already follower this user !',
+
+                    })
+                }
+
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }, handleUnFollow: (userId, currentUserId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const userCurrent = await User.findById(currentUserId);
+                const user = await User.findById(userId)
+                if (!user || !userCurrent) {
+                    resolve({
+                        code: 404,
+                        message: 'User not found!!',
+                    });
+                    return;
+                }
+                if (user.followers.includes(currentUserId)) {
+                    await user.updateOne({ $pull: { followers: currentUserId } })
+                    await userCurrent.updateOne({ $pull: { followings: userId } })
+                    const dataUserCurrent = await User.findById(currentUserId);
+
+                    resolve({
+                        code: 200,
+                        message: 'unFollow is successfully!',
+                        data: dataUserCurrent
+                    })
+                } else {
+                    resolve({
+                        code: 404,
+                        message: 'You  already unFollower this user !',
+
+                    })
+                }
+
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }, getFriends: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const user = await User.findById(userId);
+                // console.log(user)
+                const friends = await Promise.all(
+                    user.followings.map((friendId) => {
+                        return User.findById(friendId);
+                    })
+                );
+                console.log(friends)
+                let friendList = [];
+                friends.map((friend) => {
+                    const { _id, userName, avatar } = friend;
+                    friendList.push({ _id, userName, avatar });
+                });
+                resolve({
+                    EM: 'SUCCESS',
+                    EC: 200,
+                    data: friendList
+                })
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }, getUserByUsername: (username) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const user = user
+                    ? await User.findOne({ userName: username })
+                    : await User.findOne({ email: username });
+                resolve({
+                    EM: 'SUCCESS',
+                    EC: 200,
+                    data: user
+                })
+            } catch (error) {
+                reject(error)
+            }
+        })
     }
 }
+
+

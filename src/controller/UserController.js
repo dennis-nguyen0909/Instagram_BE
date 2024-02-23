@@ -83,7 +83,7 @@ module.exports = {
     sendMailAuth: async (req, res) => {
         try {
             const { email } = req.body
-            console.log(req.body)
+      
             const response = await UserService.sendMailAuth(email);
             return res.status(200).json({ response })
         } catch (error) {
@@ -111,6 +111,51 @@ module.exports = {
         } catch (error) {
             return res.status(500).json({ error })
 
+        }
+    }, getAllUser: async (req, res) => {
+        try {
+            const response = await UserService.getAllUser();
+            return res.status(200).json({ response })
+        } catch (error) {
+            return res.status(200).json(error)
+
+        }
+    }, handleFollow: async (req, res) => {
+        try {
+            const currentUserId = req.body.currentUserId;
+            const userId = req.params.id;
+
+
+            const response = await UserService.handleFollow(userId, currentUserId);
+            return res.status(200).json({ response })
+        } catch (error) {
+            return res.status(200).json(error)
+        }
+    }, handleUnFollow: async (req, res) => {
+        try {
+            const currentUserId = req.body.currentUserId;
+            const userId = req.params.id;
+            const response = await UserService.handleUnFollow(userId, currentUserId);
+            return res.status(200).json({ response })
+        } catch (error) {
+            return res.status(200).json(error)
+        }
+    }, getFriends: async (req, res) => {
+        try {
+            const userId = req.params.id;
+            const response = await UserService.getFriends(userId);
+            return res.status(200).json({ response })
+        } catch (error) {
+            return res.status(200).json(error)
+        }
+    }, getUserByUsername: async (req, res) => {
+        try {
+            const username = req.query.username;
+       
+            const response = await UserService.getUserByUsername(username);
+            return res.status(200).json({ response })
+        } catch (error) {
+            return res.status(200).json(error)
         }
     }
 }

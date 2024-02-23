@@ -36,16 +36,36 @@ mongoose.connect(process.env.MONGODB, { useNewUrlParser: true, useUnifiedTopolog
         console.error("Connect database error!!", err);
     });
 
+let onlineUsers = []
 io.on('connection', (socket) => {
-    console.log('okkk', socket.id)
-    socket.on('like', (mes) => {
-        console.log(mes)
-    })
-})
+    socket.emit('connected', socket.id)
 
+    socket.on('addNewUser', (userId) => {
+        !onlineUsers.some(user => user.userId === userId) &&
+            onlineUsers.push({
+                userId,
+                socketId: socket.id
+            })
+
+        io.emit('onlineUsers', onlineUsers)
+    })
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+    socket.on('comment', (msg) => {
+
+        socket.emit("new-comment", msg)
+        // socket.emit('comment-2', ((msg) => {
+        //     console.log(msg)
+        // }))
+
+    })
+
+})
 exports.io = io
 // notifycationSocket(server)
 // Start the server
+
 
 server.listen(port, () => {
     console.log(`Server is running on ${port}`);

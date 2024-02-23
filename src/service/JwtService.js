@@ -5,7 +5,7 @@ module.exports = {
     generalAccessToken: (payload) => {
         const accessToken = jwt.sign({
             ...payload
-        }, process.env.ACCESS_TOKEN, { expiresIn: '10s' })
+        }, process.env.ACCESS_TOKEN, { expiresIn: '365d' })
         return accessToken;
     },
     generalRefreshToken: (payload) => {
@@ -15,7 +15,7 @@ module.exports = {
         return refreshToken;
     },
     refreshTokenService: (token) => {
-        console.log(token)
+
         return new Promise((resolve, reject) => {
             try {
                 jwt.verify(token, process.env.REFRESH_TOKEN, async (err, user) => {
@@ -43,12 +43,14 @@ module.exports = {
         })
     },
     verifyToken: (token) => {
-        console.log(token)
         return new Promise((resolve, reject) => {
             jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
                 if (err) {
+
                     reject(err);
                 } else {
+
+
                     const tokenUser = user.id;
                     resolve(tokenUser);
                 }

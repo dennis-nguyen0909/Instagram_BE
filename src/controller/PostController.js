@@ -14,8 +14,9 @@ module.exports = {
     },
     delete: async (req, res) => {
         try {
+
             const postId = req.params.id
-            const token = req.headers.header.split(' ')[1]
+            const token = req.headers.token.split(' ')[1]
 
             const response = await PostService.delete(postId, token);
             return res.status(200).json({ response })
@@ -129,6 +130,33 @@ module.exports = {
             return res.status(500).json({
                 error
             })
+        }
+    }, commentsPost: async (req, res) => {
+        try {
+            const postId = req.params.id
+            const userId = req.body.userId
+            const comment = req.body.comment
+            const response = await PostService.commentsPost(postId, userId, comment);
+
+            return res.status(200).json({
+                response
+            })
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json(error)
+        }
+    }, getPostByUser: async (req, res) => {
+        try {
+            const userId = req.params.id
+            console.log(userId)
+            const response = await PostService.getPostByUser(userId);
+
+            return res.status(200).json({
+                response
+            })
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json(error)
         }
     }
 }

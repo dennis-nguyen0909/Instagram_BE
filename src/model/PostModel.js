@@ -15,14 +15,16 @@ const PostSchema = new mongoose.Schema(
             type: [String], // Nhiều hình ảnh
         },
         likes: [{ type: ObjectId, ref: "User" }],
-        comments: {
-            text: String,
-            created: { type: Date, default: Date.Now },
-            postedBy: {
-                type: ObjectId,
-                ref: 'User'
-            }
-        }
+        comments: [
+            {
+                text: String,
+                created: { type: Date, default: Date.now },
+                postedBy: {
+                    type: ObjectId,
+                    ref: "User",
+                },
+            },
+        ],
     },
     { timestamps: true }
 );

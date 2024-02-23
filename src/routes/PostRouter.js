@@ -14,6 +14,8 @@ const PostRouter = (app) => {
     router.put('/:id/like', PostController.like);
     router.put('/like-post/:id', PostController.likePost);
     router.put('/un-like/:id', PostController.unLike);
+    router.put('/comments/:id', PostController.commentsPost);
+    router.get('/get-post-by-user/:id', PostController.getPostByUser);
     return app.use('/api/post', router)
 }
 
