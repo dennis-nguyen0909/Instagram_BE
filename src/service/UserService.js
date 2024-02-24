@@ -296,9 +296,7 @@ module.exports = {
     }, getUserByUsername: (username) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const user = user
-                    ? await User.findOne({ userName: username })
-                    : await User.findOne({ email: username });
+                const user = await User.findOne({ userName: username })
                 resolve({
                     EM: 'SUCCESS',
                     EC: 200,

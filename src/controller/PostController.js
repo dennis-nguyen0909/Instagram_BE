@@ -148,7 +148,7 @@ module.exports = {
     }, getPostByUser: async (req, res) => {
         try {
             const userId = req.params.id
-            console.log(userId)
+            console.log(Object.toString(userId))
             const response = await PostService.getPostByUser(userId);
 
             return res.status(200).json({

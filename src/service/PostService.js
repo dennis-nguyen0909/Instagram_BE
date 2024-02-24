@@ -316,15 +316,16 @@ module.exports = {
     getPostByUser: (userId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const post = await Post.find({ userId: userId }, { new: true })
-                console.log(post)
+                console.log(userId);
+                const posts = await Post.find({ userId: userId }); // Tìm các bài đăng có userId trùng khớp
+                console.log(posts);
                 resolve({
                     code: 200,
                     message: 'Find ok!!',
-                    data: post
-                })
+                    data: posts
+                });
             } catch (error) {
-                reject(error)
+                reject(error);
             }
         })
     }

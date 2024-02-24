@@ -83,7 +83,7 @@ module.exports = {
     sendMailAuth: async (req, res) => {
         try {
             const { email } = req.body
-      
+
             const response = await UserService.sendMailAuth(email);
             return res.status(200).json({ response })
         } catch (error) {
@@ -151,7 +151,6 @@ module.exports = {
     }, getUserByUsername: async (req, res) => {
         try {
             const username = req.query.username;
-       
             const response = await UserService.getUserByUsername(username);
             return res.status(200).json({ response })
         } catch (error) {
