@@ -107,6 +107,8 @@ module.exports = {
         try {
             const postId = req.params.id
             const userId = req.body.userId
+            console.log(postId, userId)
+
             const response = await PostService.unLike(postId, userId);
             return res.status(200).json({
                 response
@@ -121,6 +123,7 @@ module.exports = {
         try {
             const postId = req.params.id
             const userId = req.body.userId
+            console.log(postId, userId)
             const response = await PostService.likePost(postId, userId);
             return res.status(200).json({
                 response
@@ -148,7 +151,7 @@ module.exports = {
     }, getPostByUser: async (req, res) => {
         try {
             const userId = req.params.id
-            console.log(Object.toString(userId))
+            console.log(userId)
             const response = await PostService.getPostByUser(userId);
 
             return res.status(200).json({

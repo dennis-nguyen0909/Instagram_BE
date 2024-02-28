@@ -16,6 +16,7 @@ const UserRouter = (app) => {
     router.get('/get-all-user', UserController.getAllUser);
     router.put('/follow/:id', UserController.handleFollow);
     router.put('/unfollow/:id', UserController.handleUnFollow);
+    router.get('/get-noFriends/:id', UserController.getNotFriends);
     router.get('/friends/:id', UserController.getFriends);
     router.get('/get-user', UserController.getUserByUsername);
 

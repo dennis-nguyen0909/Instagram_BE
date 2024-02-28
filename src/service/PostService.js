@@ -4,7 +4,7 @@ require('dotenv').config()
 const { verifyToken } = require('./JwtService');
 const main = require('../index');
 const { Subject, Observer } = require('../designPartern/observer');
-
+const Notify = require('../model/NotifyModel')
 module.exports = {
     create: (id, desc, images) => {
         return new Promise(async (resolve, reject) => {
@@ -36,31 +36,38 @@ module.exports = {
     delete: async (idPost, token) => {
         return new Promise(async (resolve, reject) => {
             try {
+                console.log(idPost)
                 const checkPostExist = await Post.findOne({ _id: idPost });
-
-                // Thêm từ khóa 'await' để đợi cho hàm verifyToken hoàn thành
-                const user = await verifyToken(token);
-
-                if (user !== checkPostExist.userId) {
-                    resolve({
-                        EM: 'Post is deleted by user post!',
-                        EC: 1,
-                    })
-                }
                 if (checkPostExist === null) {
                     resolve({
                         EM: 'Post not exist!',
                         EC: 1,
                     })
                 }
-
-                const deletePost = await Post.findByIdAndDelete(idPost);
-                if (deletePost) {
+                // Thêm từ khóa 'await' để đợi cho hàm verifyToken hoàn thành
+                const user = await verifyToken(token);
+                if (user !== checkPostExist.userId) {
                     resolve({
-                        EM: "Delete Successfully!",
-                        EC: 0,
+                        EM: 'Post is deleted by user post!',
+                        EC: 1,
                     })
+                } else {
+                    const deletePost = await Post.findByIdAndDelete(idPost);
+                    const userPostId = await User.findByIdAndUpdate(checkPostExist?.userId, {
+                        $pull: { posts: idPost }
+                    }, {
+                        new: true
+                    });
+                    if (deletePost) {
+                        resolve({
+                            EM: "Delete Successfully!",
+                            EC: 0,
+                            userPostId
+                        })
+                    }
                 }
+
+
             } catch (error) {
                 reject(error)
             }
@@ -185,7 +192,14 @@ module.exports = {
                     };
                 }));
                 const filteredPosts = postsWithUserInfo.filter(pos => pos !== null);
+                const notifyLike = await Notify.create({
+                    postId: postId,
+                    userId: userId,
+                    message: "đã thích"
+                })
+                console.log("notifyLike", notifyLike)
                 main.io.emit('like', filteredPosts)
+
                 resolve({
                     status: 'Ok',
                     message: "The post has been liked",
@@ -220,7 +234,14 @@ module.exports = {
                     }
                 }))
                 const filteredPosts = filterPost.filter(pos => pos !== null);
+                const notifyLike = await Notify.create({
+                    postId: postId,
+                    userId: userId,
+                    message: `${userId} vừa like bài viết ${postId}`
+                })
+                console.log("notifyLike", notifyLike)
 
+                console.log("postId", postId)
                 main.io.emit('unlike', filteredPosts)
                 resolve({
                     status: 'Ok',
@@ -236,13 +257,14 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             try {
                 const post = await Post.findById(postId);
-
                 if (!post.likes.includes(userId)) {
                     const post1 = await Post.findByIdAndUpdate(postId, {
                         $addToSet: { likes: userId }
                     }, {
                         new: true
                     })
+
+                    // console.log(post1)
                     const posts = await Post.find().sort({ createdAt: -1 }).populate('likes', 'userName name avatar');
 
                     const filterPost = await Promise.all(posts.map(async (post) => {
@@ -257,7 +279,11 @@ module.exports = {
                     }))
                     const filteredPosts = filterPost.filter(pos => pos !== null);
 
-                    main.io.emit('unlike', filteredPosts)
+                    main.io.emit('like', filteredPosts)
+                    const findPost = await Post.findById(postId).populate('likes')
+                    const userLike = await User.findById(userId);
+                    // console.log(findPost)
+                    main.io.emit("notify-like", findPost, userLike)
                     resolve({
                         EM: 'The post has been liked',
                         data: post1
@@ -281,7 +307,7 @@ module.exports = {
                     }))
                     const filteredPosts = filterPost.filter(pos => pos !== null);
 
-                    main.io.emit('like', filteredPosts)
+                    main.io.emit('unlike', filteredPosts)
 
                     resolve({
                         EM: 'The post has been disliked',
@@ -316,9 +342,9 @@ module.exports = {
     getPostByUser: (userId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                console.log(userId);
+                console.log(userId)
                 const posts = await Post.find({ userId: userId }); // Tìm các bài đăng có userId trùng khớp
-                console.log(posts);
+                console.log(posts)
                 resolve({
                     code: 200,
                     message: 'Find ok!!',

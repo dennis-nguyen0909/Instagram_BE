@@ -11,11 +11,6 @@ const notifycationSocket = (httpServer) => {
         socket.on('like', ({ postId, userId, userPost }) => {
             console.log(postId, userId, userPost);
         })
-        // socket.on('likePost', ({ postId, userId, userPost }) => {
-
-        //     // Gửi thông báo đến chủ bài viết thông qua socket với postId và userId của người like
-        //     io.emit('notifyOwnerPostLiked', { postId, userId, userPost });
-        // });
     });
 }
 module.exports = notifycationSocket

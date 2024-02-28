@@ -140,10 +140,10 @@ module.exports = {
         } catch (error) {
             return res.status(200).json(error)
         }
-    }, getFriends: async (req, res) => {
+    }, getNotFriends: async (req, res) => {
         try {
             const userId = req.params.id;
-            const response = await UserService.getFriends(userId);
+            const response = await UserService.getNotFriends(userId);
             return res.status(200).json({ response })
         } catch (error) {
             return res.status(200).json(error)
@@ -156,5 +156,14 @@ module.exports = {
         } catch (error) {
             return res.status(200).json(error)
         }
+    }, getFriends: async (req, res) => {
+        try {
+            const userId = req.params.id;
+            const response = await UserService.getFriends(userId);
+            return res.status(200).json({ response })
+        } catch (error) {
+            return res.status(200).json(error)
+        }
     }
+
 }

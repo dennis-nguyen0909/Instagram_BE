@@ -11,6 +11,8 @@ dotenv.config();
 const cors = require('cors');
 const notifycationSocket = require('../src/socket/notifycation');
 const NotifyRouter = require('./routes/NotifyRouter');
+const MessageRouter = require('./routes/MessageRouter')
+const ChatRouter = require('./routes/ChatRouter')
 // SOCKET
 const http = require('http'); // Import thêm module http
 const server = http.createServer(app); // Tạo thể hiện của http.Server từ app
@@ -27,6 +29,8 @@ app.use(cookieParser());
 UserRouter(app);
 PostRouter(app);
 NotifyRouter(app);
+MessageRouter(app);
+ChatRouter(app);
 
 mongoose.connect(process.env.MONGODB, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
@@ -48,9 +52,11 @@ io.on('connection', (socket) => {
             })
 
         io.emit('onlineUsers', onlineUsers)
+        console.log("onlineUsers", onlineUsers)
     })
     socket.on('disconnect', () => {
-        console.log('user disconnected');
+        onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id)
+        io.emit('onlineUsers', onlineUsers)
     });
     socket.on('comment', (msg) => {
 

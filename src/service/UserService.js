@@ -4,12 +4,12 @@ const { generalAccessToken, generalRefreshToken } = require('./JwtService');
 const { sendEmailGenerateAuth } = require('./NodeMailer');
 const saltRounds = 10;
 const myPlaintextPassword = 's0/\/\P4$$w0rD';
+const main = require('../index')
 require('dotenv').config()
 module.exports = {
     create: (email, password, userName, fullName, confirmPassword) => {
         return new Promise(async (resolve, reject) => {
             try {
-
                 const checkExistEmail = await User.findOne({
                     email: email
                 })
@@ -217,6 +217,7 @@ module.exports = {
                     await user.updateOne({ $addToSet: { followers: currentUserId } })
                     await userCurrent.updateOne({ $addToSet: { followings: userId } })
                     const dataUserCurrent = await User.findById(currentUserId);
+                    main.io.emit("follow", dataUserCurrent)
                     resolve({
                         code: 200,
                         message: 'Follow is successfully!',
@@ -250,6 +251,7 @@ module.exports = {
                     await user.updateOne({ $pull: { followers: currentUserId } })
                     await userCurrent.updateOne({ $pull: { followings: userId } })
                     const dataUserCurrent = await User.findById(currentUserId);
+                    main.io.emit("un-follow", dataUserCurrent)
 
                     resolve({
                         code: 200,
@@ -268,31 +270,35 @@ module.exports = {
                 reject(error)
             }
         })
-    }, getFriends: (userId) => {
+    }, getNotFriends: (userId) => {
         return new Promise(async (resolve, reject) => {
             try {
+                // Tìm người dùng dựa trên userId
                 const user = await User.findById(userId);
-                // console.log(user)
-                const friends = await Promise.all(
-                    user.followings.map((friendId) => {
-                        return User.findById(friendId);
-                    })
-                );
-                console.log(friends)
-                let friendList = [];
-                friends.map((friend) => {
-                    const { _id, userName, avatar } = friend;
-                    friendList.push({ _id, userName, avatar });
+
+                // Lấy danh sách id của những người mà userId đã follow
+                const followingIds = user.followings.map(String);
+
+                // Tìm tất cả người dùng mà userId chưa follow
+                const notFollowingUsers = await User.find({
+                    _id: { $nin: followingIds.concat(userId) } // Loại bỏ userId hiện tại
                 });
+
+                // Format dữ liệu
+                const notFollowingList = notFollowingUsers.map((user) => {
+                    const { _id, userName, avatar, name, email } = user;
+                    return { _id, userName, avatar, name, email };
+                });
+
                 resolve({
                     EM: 'SUCCESS',
                     EC: 200,
-                    data: friendList
-                })
+                    data: notFollowingList
+                });
             } catch (error) {
-                reject(error)
+                reject(error);
             }
-        })
+        });
     }, getUserByUsername: (username) => {
         return new Promise(async (resolve, reject) => {
             try {
@@ -301,6 +307,29 @@ module.exports = {
                     EM: 'SUCCESS',
                     EC: 200,
                     data: user
+                })
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }, getFriends: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const user = await User.findById(userId);
+                const friends = await Promise.all(
+                    user.followings.map((friend) => {
+                        return User.findById(friend)
+                    })
+                )
+                let listFriends = [];
+                friends.map((item) => {
+                    const { _id, name, userName, email, avatar } = item;
+                    listFriends.push({ _id, name, userName, email, avatar });
+                })
+                resolve({
+                    EM: 'SUCCESS',
+                    code: 200,
+                    data: listFriends
                 })
             } catch (error) {
                 reject(error)
