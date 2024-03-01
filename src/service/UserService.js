@@ -186,10 +186,22 @@ module.exports = {
 
             }
         })
-    }, getAllUser: () => {
+    }, getAllUser: (filter) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const allUser = await User.find();
+                console.log(filter);
+
+                let allUser;
+                if (filter) {
+                    allUser = await User.find({
+                        $or: [
+                            { userName: { $regex: filter, $options: 'i' } }, // Tìm theo userName
+                            { name: { $regex: filter, $options: 'i' } }, // Tìm theo name
+                        ]
+                    });
+                } else {
+                    allUser = await User.find();
+                }
                 resolve({
                     EM: 'GET ALL USER',
                     EC: 0,
@@ -203,6 +215,7 @@ module.exports = {
     handleFollow: (userId, currentUserId) => {
         return new Promise(async (resolve, reject) => {
             try {
+
                 const userCurrent = await User.findById(currentUserId);
                 const user = await User.findById(userId)
 

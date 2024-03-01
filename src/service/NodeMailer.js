@@ -1,7 +1,7 @@
 
 const nodemailer = require("nodemailer");
 const dotenv = require('dotenv');
-const { generalAuth } = require("../helper");
+const { generalAuth } = require("../helper/helper");
 dotenv.config();
 const sendEmailGenerateAuth = async (email) => {
     const authRandom = generalAuth();

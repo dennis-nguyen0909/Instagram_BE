@@ -1,11 +1,11 @@
 const jwt = require('jsonwebtoken');
 const { verifyToken } = require('../service/JwtService');
-
+const HttpStatusCode = require('../exceptions/HttpStatusCode')
 // Middleware xác minh token
 const authenticateToken = (req, res, next) => {
     const token = req.headers.header.split(' ')[1];
     if (!token) {
-        return res.status(401).json({ EM: 'Unauthorized', EC: 1 });
+        return res.status(HttpStatusCode.NOT_AUTHENTICATION).json({ EM: 'Unauthorized', EC: 1 });
     }
     verifyToken(token)
         .then((user) => {

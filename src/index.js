@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080;
 const UserRouter = require('../src/routes/UserRouter');
 const PostRouter = require('../src/routes/PostRouter');
 const bodyParser = require('body-parser');
@@ -16,7 +16,8 @@ const ChatRouter = require('./routes/ChatRouter')
 // SOCKET
 const http = require('http'); // Import thêm module http
 const server = http.createServer(app); // Tạo thể hiện của http.Server từ app
-const { Server } = require('socket.io')
+const { Server } = require('socket.io');
+const connectToDatabase = require('./db/mongodb');
 const io = new Server(server) // Gắn socket.io vào thể hiện của http.Server
 
 
@@ -31,14 +32,7 @@ PostRouter(app);
 NotifyRouter(app);
 MessageRouter(app);
 ChatRouter(app);
-
-mongoose.connect(process.env.MONGODB, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-        console.log("Connect database successfully!!");
-    })
-    .catch((err) => {
-        console.error("Connect database error!!", err);
-    });
+connectToDatabase();
 
 let onlineUsers = []
 io.on('connection', (socket) => {
@@ -59,20 +53,11 @@ io.on('connection', (socket) => {
         io.emit('onlineUsers', onlineUsers)
     });
     socket.on('comment', (msg) => {
-
         socket.emit("new-comment", msg)
-        // socket.emit('comment-2', ((msg) => {
-        //     console.log(msg)
-        // }))
-
     })
 
 })
 exports.io = io
-// notifycationSocket(server)
-// Start the server
-
-
 server.listen(port, () => {
     console.log(`Server is running on ${port}`);
 });

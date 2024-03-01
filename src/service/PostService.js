@@ -141,6 +141,8 @@ module.exports = {
     getAll: () => {
         return new Promise(async (resolve, reject) => {
             try {
+                const count = await Post.countDocuments()
+                console.log(count)
                 const getAllPost = await Post.find().sort({ createdAt: -1 })
                     .populate('likes', 'userName avatar')
                     .populate('comments.postedBy', 'userName email avatar');

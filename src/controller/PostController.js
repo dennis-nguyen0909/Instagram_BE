@@ -1,15 +1,15 @@
 const JwtService = require("../service/JwtService");
 const PostService = require("../service/PostService");
 
-
+const HttpStatusCode = require('../exceptions/HttpStatusCode')
 module.exports = {
     create: async (req, res) => {
         try {
             const { id, desc, images } = req.body
             const response = await PostService.create(id, desc, images);
-            return res.status(200).json({ response })
+            return res.status(HttpStatusCode.OK).json({ response })
         } catch (error) {
-            return res.status(500).json({ error })
+            return res.status(HttpStatusCode.NOT_FOUND).json({ error })
         }
     },
     delete: async (req, res) => {
@@ -19,26 +19,26 @@ module.exports = {
             const token = req.headers.token.split(' ')[1]
 
             const response = await PostService.delete(postId, token);
-            return res.status(200).json({ response })
+            return res.status(HttpStatusCode.OK).json({ response })
 
         } catch (error) {
-            return res.status(500).json({ error })
+            return res.status(HttpStatusCode.NOT_FOUND).json({ error })
         }
     }
     , getDetailPost: async (req, res) => {
         try {
             const postId = req.params.id;
             if (!postId) {
-                return res.status(200).json({
+                return res.status(HttpStatusCode.OK).json({
                     message: "Post is not defined!",
                     status: "Error"
                 })
             }
             const response = await PostService.getDetailPost(postId);
-            return res.status(200).json({ response })
+            return res.status(HttpStatusCode.OK).json({ response })
 
         } catch (error) {
-            return res.status(500).json({ error })
+            return res.status(HttpStatusCode.NOT_FOUND).json({ error })
 
         }
     }
@@ -47,15 +47,15 @@ module.exports = {
             const token = req.body.headers.token.split(' ')[1];
             // const token = req.cookie.refresh_token
             if (!token) {
-                return res.status(200).json({
+                return res.status(HttpStatusCode.OK).json({
                     status: 'Lỗi',
                     message: "Không có token"
                 })
             }
             const response = await JwtService.refreshTokenService(token);
-            return res.status(200).json({ response })
+            return res.status(HttpStatusCode.OK).json({ response })
         } catch (error) {
-            return res.status(500).json({ error })
+            return res.status(HttpStatusCode.NOT_FOUND).json({ error })
         }
     },
     update: async (req, res) => {
@@ -66,22 +66,22 @@ module.exports = {
 
 
             const response = await PostService.update(id, data, token);
-            return res.status(200).json({
+            return res.status(HttpStatusCode.OK).json({
                 response
             })
         } catch (error) {
-            return res.status(500).json({
+            return res.status(HttpStatusCode.NOT_FOUND).json({
                 error
             })
         }
     }, getAll: async (req, res) => {
         try {
             const response = await PostService.getAll();
-            return res.status(200).json({
+            return res.status(HttpStatusCode.OK).json({
                 response
             })
         } catch (error) {
-            return res.status(500).json({
+            return res.status(HttpStatusCode.NOT_FOUND).json({
                 error
             })
         }
@@ -93,12 +93,12 @@ module.exports = {
             const userId = req.body.userId
 
             const response = await PostService.like(postId, userId);
-            return res.status(200).json({
+            return res.status(HttpStatusCode.OK).json({
                 response
             })
         } catch (error) {
             console.log(error)
-            return res.status(500).json({
+            return res.status(HttpStatusCode.NOT_FOUND).json({
                 error
             })
         }
@@ -110,12 +110,12 @@ module.exports = {
             console.log(postId, userId)
 
             const response = await PostService.unLike(postId, userId);
-            return res.status(200).json({
+            return res.status(HttpStatusCode.OK).json({
                 response
             })
         } catch (error) {
             console.log(error)
-            return res.status(500).json({
+            return res.status(HttpStatusCode.NOT_FOUND).json({
                 error
             })
         }
@@ -125,12 +125,12 @@ module.exports = {
             const userId = req.body.userId
             console.log(postId, userId)
             const response = await PostService.likePost(postId, userId);
-            return res.status(200).json({
+            return res.status(HttpStatusCode.OK).json({
                 response
             })
         } catch (error) {
             console.log(error)
-            return res.status(500).json({
+            return res.status(HttpStatusCode.NOT_FOUND).json({
                 error
             })
         }
@@ -141,12 +141,12 @@ module.exports = {
             const comment = req.body.comment
             const response = await PostService.commentsPost(postId, userId, comment);
 
-            return res.status(200).json({
+            return res.status(HttpStatusCode.OK).json({
                 response
             })
         } catch (error) {
             console.log(error)
-            return res.status(500).json(error)
+            return res.status(HttpStatusCode.NOT_FOUND).json(error)
         }
     }, getPostByUser: async (req, res) => {
         try {
@@ -154,12 +154,12 @@ module.exports = {
             console.log(userId)
             const response = await PostService.getPostByUser(userId);
 
-            return res.status(200).json({
+            return res.status(HttpStatusCode.OK).json({
                 response
             })
         } catch (error) {
             console.log(error)
-            return res.status(500).json(error)
+            return res.status(HttpStatusCode.NOT_FOUND).json(error)
         }
     }
 }
