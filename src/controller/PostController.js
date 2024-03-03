@@ -161,5 +161,16 @@ module.exports = {
             console.log(error)
             return res.status(HttpStatusCode.NOT_FOUND).json(error)
         }
+    }, handleUploadImages: async (req, res) => {
+        try {
+            const files = req.files
+            const response = await PostService.handleUploadImages(files);
+
+            return res.status(HttpStatusCode.OK).json({
+                response
+            })
+        } catch (error) {
+            return res.status(HttpStatusCode.NOT_FOUND).json(error)
+        }
     }
 }

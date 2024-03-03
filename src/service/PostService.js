@@ -5,6 +5,9 @@ const { verifyToken } = require('./JwtService');
 const main = require('../index');
 const { Subject, Observer } = require('../designPartern/observer');
 const Notify = require('../model/NotifyModel')
+const cloudinary = require('../uploads/cloudinary')
+const multer = require('../uploads/multer')
+const fs = require('fs')
 module.exports = {
     create: (id, desc, images) => {
         return new Promise(async (resolve, reject) => {
@@ -351,6 +354,26 @@ module.exports = {
                     code: 200,
                     message: 'Find ok!!',
                     data: posts
+                });
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }, handleUploadImages: (files) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const uploader = async (path) => await cloudinary.uploads(path, 'Images');
+                const urls = []
+                for (const file of files) {
+                    const { path } = file
+                    const newPath = await uploader(path);
+                    urls.push(newPath)
+                    fs.unlinkSync(path)
+                }
+                resolve({
+                    code: 200,
+                    message: 'Uploads successfully!!',
+                    data: urls
                 });
             } catch (error) {
                 reject(error);
