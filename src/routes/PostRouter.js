@@ -3,7 +3,8 @@ const PostController = require('../controller/PostController');
 const { authUserMiddleWare } = require('../middleware/authMiddleware');
 const authenticateToken = require('../middleware/authMiddleware');
 const router = express.Router()
-const upload = require('../uploads/multer')
+const upload = require('../uploads/multer');
+const uploadVideo = require('../uploads/multer');
 
 const PostRouter = (app) => {
     router.post('/create', PostController.create);
@@ -17,6 +18,7 @@ const PostRouter = (app) => {
     router.put('/comments/:id', PostController.commentsPost);
     router.get('/get-post-by-user/:id', PostController.getPostByUser);
     router.post('/upload-images', upload.array('image'), PostController.handleUploadImages);
+    router.post('/upload-videos', uploadVideo.single('video'), PostController.handleUploadVideos);
     return app.use('/api/post', router)
 }
 

@@ -20,4 +20,6 @@ const upload = multer({
     limits: { fieldSize: 1024 * 1024 },
     fileFilter: fileValidation
 })
+const uploadVideo = multer({ storage: storage })
 module.exports = upload
+module.exports = uploadVideo

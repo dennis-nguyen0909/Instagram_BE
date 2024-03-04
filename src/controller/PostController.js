@@ -172,5 +172,16 @@ module.exports = {
         } catch (error) {
             return res.status(HttpStatusCode.NOT_FOUND).json(error)
         }
+    }, handleUploadVideos: async (req, res) => {
+        try {
+            const file = req.file
+            const response = await PostService.handleUploadVideos(file);
+
+            return res.status(HttpStatusCode.OK).json({
+                response
+            })
+        } catch (error) {
+            return res.status(HttpStatusCode.NOT_FOUND).json(error)
+        }
     }
 }

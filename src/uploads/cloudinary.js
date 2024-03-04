@@ -9,8 +9,8 @@ cloudinary.config({
     api_secret: 'As23z_TAML8DqymuQA5Mw-KIk14'
 });
 exports.uploads = (file, folder) => {
-    return new Promise((resolve, reject) => {
-        cloudinary.v2.uploader
+    return new Promise(async (resolve, reject) => {
+        await cloudinary.v2.uploader
             .upload(file, { folder: folder })
             .then(result => resolve({
                 url: result.url,
@@ -18,3 +18,23 @@ exports.uploads = (file, folder) => {
             }));
     })
 }
+exports.uploadVideo = (file, folder) => {
+    return new Promise(async (resolve, reject) => {
+        await cloudinary.v2.uploader.upload(
+            file,
+            { folder: folder, resource_type: 'video' }, // Đã thêm resource_type vào đây
+            (error, result) => {
+                if (error) {
+                    console.error(error);
+                    reject(error);
+                } else {
+                    console.log(result);
+                    resolve({
+                        url: result.url,
+                        id: result.public_id
+                    });
+                }
+            }
+        );
+    });
+};

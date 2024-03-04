@@ -18,6 +18,7 @@ const http = require('http'); // Import thêm module http
 const server = http.createServer(app); // Tạo thể hiện của http.Server từ app
 const { Server } = require('socket.io');
 const connectToDatabase = require('./db/mongodb');
+const ReelRouter = require('./routes/ReelRouter');
 const io = new Server(server) // Gắn socket.io vào thể hiện của http.Server
 
 
@@ -32,6 +33,7 @@ PostRouter(app);
 NotifyRouter(app);
 MessageRouter(app);
 ChatRouter(app);
+ReelRouter(app);
 connectToDatabase();
 
 let onlineUsers = []

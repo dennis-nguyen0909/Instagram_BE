@@ -17,5 +17,28 @@ const authenticateToken = (req, res, next) => {
             res.status(403).json({ EM: 'Forbidden', EC: 1 });
         });
 };
+const authUserMiddleware = async (req, res, next) => {
+    try {
+        const userId = req.body.userId
+        const token = req.headers.header.split(" ")[1]
+        if (!token) {
+            return res.status(HttpStatusCode.NOT_AUTHENTICATION).json({ EM: 'Unauthorized', EC: 1 });
+        }
+        const result = await verifyToken(token);
+        console.log(userId)
+        console.log(result)
+        if (result === userId) {
+            console.log('ok')
+            next()
+        } else {
+            res.status(HttpStatusCode.NOT_AUTHENTICATION).json({
+                message: 'Lỗi authentication'
+            })
+        }
+    } catch (error) {
+
+    }
+}
 
 module.exports = authenticateToken;
+module.exports = authUserMiddleware;

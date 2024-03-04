@@ -268,8 +268,6 @@ module.exports = {
                     }, {
                         new: true
                     })
-
-                    // console.log(post1)
                     const posts = await Post.find().sort({ createdAt: -1 }).populate('likes', 'userName name avatar');
 
                     const filterPost = await Promise.all(posts.map(async (post) => {
@@ -287,7 +285,6 @@ module.exports = {
                     main.io.emit('like', filteredPosts)
                     const findPost = await Post.findById(postId).populate('likes')
                     const userLike = await User.findById(userId);
-                    // console.log(findPost)
                     main.io.emit("notify-like", findPost, userLike)
                     resolve({
                         EM: 'The post has been liked',
@@ -374,6 +371,22 @@ module.exports = {
                     code: 200,
                     message: 'Uploads successfully!!',
                     data: urls
+                });
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }, handleUploadVideos: (file) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                console.log("filessss", file)
+                const uploader = async (path) => await cloudinary.uploadVideo(path, 'Videos');
+                const result = await uploader(file.path);
+                console.log(result)
+                resolve({
+                    code: 200,
+                    message: 'Uploads successfully!!',
+                    data: result
                 });
             } catch (error) {
                 reject(error);
