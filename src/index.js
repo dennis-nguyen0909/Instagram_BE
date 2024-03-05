@@ -19,6 +19,7 @@ const server = http.createServer(app); // Tạo thể hiện của http.Server t
 const { Server } = require('socket.io');
 const connectToDatabase = require('./db/mongodb');
 const ReelRouter = require('./routes/ReelRouter');
+const StoriesRouter = require('./routes/StorieRouter');
 const io = new Server(server) // Gắn socket.io vào thể hiện của http.Server
 
 
@@ -34,6 +35,7 @@ NotifyRouter(app);
 MessageRouter(app);
 ChatRouter(app);
 ReelRouter(app);
+StoriesRouter(app);
 connectToDatabase();
 
 let onlineUsers = []
@@ -59,6 +61,22 @@ io.on('connection', (socket) => {
     })
 
 })
+
+const { OpenAI } = require('openai')
+const openai = new OpenAI({
+    apiKey: process.env.OPEN_API_KEY
+});
+
+async function main() {
+    const completion = await openai.chat.completions.create({
+        messages: [{ role: "system", content: "Xin chào" }],
+        model: "gpt-3.5-turbo",
+    });
+
+    console.log(completion.choices[0].message.content);
+}
+
+main();
 exports.io = io
 server.listen(port, () => {
     console.log(`Server is running on ${port}`);

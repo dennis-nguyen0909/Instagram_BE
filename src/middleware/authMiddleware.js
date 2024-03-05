@@ -25,8 +25,6 @@ const authUserMiddleware = async (req, res, next) => {
             return res.status(HttpStatusCode.NOT_AUTHENTICATION).json({ EM: 'Unauthorized', EC: 1 });
         }
         const result = await verifyToken(token);
-        console.log(userId)
-        console.log(result)
         if (result === userId) {
             console.log('ok')
             next()
