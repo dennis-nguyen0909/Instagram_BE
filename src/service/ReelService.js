@@ -93,7 +93,7 @@ module.exports = {
     }, handleGetAll: () => {
         return new Promise(async (resolve, reject) => {
             try {
-                const getAll = await Reel.find().sort({ createdAt: -1 });
+                const getAll = await Reel.find().sort({ createdAt: -1 }).populate('userId', 'userName avatar , email');
                 if (!getAll) {
                     resolve({
                         code: 404,

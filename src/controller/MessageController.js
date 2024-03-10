@@ -17,5 +17,13 @@ module.exports = {
         } catch (error) {
             return res.status(HttpStatusCode.NOT_FOUND).json(error)
         }
+    }, getAllMessage: async (req, res) => {
+        try {
+            const userId = req.params.id
+            const response = await MessageService.getAllMessage(userId);
+            return res.status(HttpStatusCode.OK).json({ response })
+        } catch (error) {
+            return res.status(HttpStatusCode.NOT_FOUND).json(error)
+        }
     }
 }
