@@ -26,10 +26,8 @@ module.exports = {
     }, getMessageById: (id) => {
         return new Promise(async (resolve, reject) => {
             try {
-                console.log(id)
                 const getMessage = await Message.find({ chatId: id });
                 const user = await User.findById(id)
-                console.log(user)
                 resolve({
                     code: 200,
                     message: 'Success',

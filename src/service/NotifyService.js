@@ -7,7 +7,6 @@ module.exports = {
     create: (userId, postId, avatar, ownerId, message) => {
         return new Promise(async (resolve, reject) => {
             try {
-                console.log(userId, postId, avatar, ownerId, message)
                 const user = await User.findById(userId);
                 if (!user) {
                     resolve({
@@ -31,11 +30,11 @@ module.exports = {
                     ownerId
                 });
                 // Populate the userId and ownerId fields with user names
-                let result = await notifyObj.populate('userId', 'name');
-                result = await notifyObj.populate('ownerId', 'name');
+                let result = await notifyObj.populate('userId', 'userName name avatar');
+                result = await notifyObj.populate('ownerId', 'userName name avatar');
                 // notifyObj = await notifyObj.populate('ownerId', 'name').execPopulate();
-                result.message = result.userId.name + " Đã like bài viết của bạn"
-
+                result.message = result.userId.userName + " đã thích bài viết của bạn"
+                result.save();
                 // Only emit to the owner if the liker is not the owner
 
                 main.io.emit('new-notify-like', result);
@@ -56,7 +55,10 @@ module.exports = {
     getById: (userId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const notify = await Notify.find({ ownerId: userId });
+                const notify = await Notify.find({ ownerId: userId }).sort({ createdAt: -1 })
+                    .populate("userId", "userName avatar")
+                    .populate("ownerId", "userName avatar")
+                    .populate("postId", "images desc");
                 resolve({
                     EC: 0,
                     EM: 'Success',

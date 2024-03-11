@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const { ObjectId } = mongoose.Schema
 
 const ReelSchema = new mongoose.Schema({
     userId: {
@@ -15,7 +16,7 @@ const ReelSchema = new mongoose.Schema({
         require: true
     },
     likes: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: ObjectId,
         ref: 'User'
     }],
     comments: [
@@ -23,7 +24,7 @@ const ReelSchema = new mongoose.Schema({
             text: String,
             created: { type: Date, default: Date.now },
             postedBy: {
-                type: mongoose.Schema.Types.ObjectId,
+                type: ObjectId,
                 ref: "User",
             },
         },

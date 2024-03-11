@@ -7,7 +7,8 @@ const { Subject, Observer } = require('../designPartern/observer');
 const Notify = require('../model/NotifyModel')
 const cloudinary = require('../uploads/cloudinary')
 const multer = require('../uploads/multer')
-const fs = require('fs')
+const fs = require('fs');
+const NotifyService = require('./NotifyService');
 module.exports = {
     create: (id, desc, images) => {
         return new Promise(async (resolve, reject) => {
@@ -23,6 +24,7 @@ module.exports = {
                 }
                 const createPost = await Post.create({ userId: id, desc: desc, images: images })
                 checkIdUser.posts.push(createPost._id);
+
                 await checkIdUser.save();
                 if (createPost) {
                     resolve({
@@ -281,13 +283,18 @@ module.exports = {
                         }
                     }))
                     const filteredPosts = filterPost.filter(pos => pos !== null);
-
                     main.io.emit('like', filteredPosts)
-                    const findPost = await Post.findById(postId).populate('likes')
+                    const findPost = await Post.findById(postId).populate('userId', 'userName avatar')
                     const userLike = await User.findById(userId);
-                    main.io.emit("notify-like", findPost, userLike)
+                    // if (userId !== post?.userId) {
+                    //     const result = await NotifyService.create(userLike?._id, findPost?.id, userLike?.avatar, findPost?.userId, 'thích');
+                    // } else {
+                    //     return;
+                    // }
+                    // main.io.emit("notify-like", findPost, userLike)
                     resolve({
                         EM: 'The post has been liked',
+                        code: 200,
                         data: post1
                     })
                 } else {
@@ -313,6 +320,7 @@ module.exports = {
 
                     resolve({
                         EM: 'The post has been disliked',
+                        code: 201,
                         data: post1
                     })
                 }

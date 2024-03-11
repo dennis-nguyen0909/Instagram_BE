@@ -10,6 +10,8 @@ const ReelRouter = (app) => {
     router.put('/update/:id', authUserMiddleware, ReelController.handleUpdateReel);
     router.get('/get-detail/:id', ReelController.handleGetDetail);
     router.get('/get-all', ReelController.handleGetAll);
+    router.put('/like/:id', ReelController.handleLikeReel);
+    router.put('/comment/:id', ReelController.handleCommentReel);
     return app.use('/api/reel', router)
 }
 

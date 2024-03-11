@@ -53,7 +53,6 @@ module.exports = {
             const response = await StoriesService.handleLike(userId, storyId);
             return res.status(HttpStatusCode.OK).json({ response })
         } catch (error) {
-            console.log(error)
             return res.status(HttpStatusCode.NOT_FOUND).json({ error })
         }
     }, handleGetDetail: async (req, res) => {
@@ -62,7 +61,6 @@ module.exports = {
             const response = await StoriesService.handleGetDetail(storyID);
             return res.status(HttpStatusCode.OK).json({ response })
         } catch (error) {
-            console.log(error)
             return res.status(HttpStatusCode.NOT_FOUND).json({ error })
         }
     }, handleComments: async (req, res) => {
@@ -72,7 +70,6 @@ module.exports = {
             const response = await StoriesService.handleComments(storyID, userId, text);
             return res.status(HttpStatusCode.OK).json({ response })
         } catch (error) {
-            console.log(error)
             return res.status(HttpStatusCode.NOT_FOUND).json({ error })
         }
     }

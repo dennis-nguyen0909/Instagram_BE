@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema(
         access_token: { type: String, require: true },
         refresh_token: { type: String, require: true },
         posts: [{ type: String, ref: "Post" }],
+        reels: [{ type: String, ref: "Reel" }],
     }, {
     timestamps: true
 });

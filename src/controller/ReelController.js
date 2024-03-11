@@ -8,18 +8,15 @@ module.exports = {
             return res.status(HttpStatusCode.OK).json({ response });
 
         } catch (error) {
-            console.log(error)
             return res.status(HttpStatusCode.NOT_FOUND).json({ error })
         }
     }, handleDeleteReel: async (req, res) => {
         try {
             const id = req.params.id
-            console.log(id)
             const response = await ReelService.handleDeleteReel(id);
             return res.status(HttpStatusCode.OK).json({ response });
 
         } catch (error) {
-            console.log(error)
             return res.status(HttpStatusCode.NOT_FOUND).json({ error })
         }
     }, handleGetDetail: async (req, res) => {
@@ -29,7 +26,6 @@ module.exports = {
             return res.status(HttpStatusCode.OK).json({ response });
 
         } catch (error) {
-            console.log(error)
             return res.status(HttpStatusCode.NOT_FOUND).json({ error })
         }
     }, handleUpdateReel: async (req, res) => {
@@ -40,7 +36,6 @@ module.exports = {
             return res.status(HttpStatusCode.OK).json({ response });
 
         } catch (error) {
-            console.log(error)
             return res.status(HttpStatusCode.NOT_FOUND).json({ error })
         }
     }, handleGetAll: async (req, res) => {
@@ -49,7 +44,27 @@ module.exports = {
             return res.status(HttpStatusCode.OK).json({ response });
 
         } catch (error) {
-            console.log(error)
+            return res.status(HttpStatusCode.NOT_FOUND).json({ error })
+        }
+    }, handleLikeReel: async (req, res) => {
+        try {
+            const idReel = req.params.id
+            const idUser = req.body.idUser
+            const response = await ReelService.handleLikeReel(idUser, idReel);
+            return res.status(HttpStatusCode.OK).json({ response });
+
+        } catch (error) {
+            return res.status(HttpStatusCode.NOT_FOUND).json({ error })
+        }
+    }, handleCommentReel: async (req, res) => {
+        try {
+            const idReel = req.params.id
+            const idUser = req.body.idUser
+            const comment = req.body.comment
+            const response = await ReelService.handleCommentReel(idUser, idReel, comment);
+            return res.status(HttpStatusCode.OK).json({ response });
+
+        } catch (error) {
             return res.status(HttpStatusCode.NOT_FOUND).json({ error })
         }
     }

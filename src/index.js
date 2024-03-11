@@ -39,25 +39,41 @@ StoriesRouter(app);
 connectToDatabase();
 
 let onlineUsers = []
+const addNewUser = (userName, socketId) => {
+    !onlineUsers.some(user => user.userName === userName) &&
+        onlineUsers.push({
+            userName,
+            socketId
+        })
+
+}
+const removeUser = (socketId) => {
+    onlineUsers = onlineUsers.filter((user) => user?.socketId !== socketId)
+}
+const getUser = (userName) => {
+    return onlineUsers.find((user) => user?.userName === userName)
+}
 io.on('connection', (socket) => {
     socket.emit('connected', socket.id)
-
-    socket.on('addNewUser', (userId) => {
-        !onlineUsers.some(user => user.userId === userId) &&
-            onlineUsers.push({
-                userId,
-                socketId: socket.id
-            })
-
-        io.emit('onlineUsers', onlineUsers)
+    socket.on('addNewUser', (userName) => {
+        addNewUser(userName, socket.id)
+        // io.emit('onlineUsers', onlineUsers)
         console.log("onlineUsers", onlineUsers)
     })
     socket.on('disconnect', () => {
-        onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id)
-        io.emit('onlineUsers', onlineUsers)
+        removeUser(socket.id)
+        // console.log("onlineUsers", onlineUsers)
+        // io.emit('onlineUsers', onlineUsers)
     });
+
     socket.on('comment', (msg) => {
         socket.emit("new-comment", msg)
+    })
+    socket.on('notifications', ({ sender, receiver, message }) => {
+        console.log("sender, receiver, message ", sender, receiver, message)
+        const receiverOnline = getUser(receiver)
+        console.log(receiverOnline)
+        io.to(receiverOnline?.socketId).emit("getNotifications", { sender, message })
     })
 
 })

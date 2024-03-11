@@ -97,7 +97,6 @@ module.exports = {
                 response
             })
         } catch (error) {
-            console.log(error)
             return res.status(HttpStatusCode.NOT_FOUND).json({
                 error
             })
@@ -107,14 +106,13 @@ module.exports = {
         try {
             const postId = req.params.id
             const userId = req.body.userId
-            console.log(postId, userId)
 
             const response = await PostService.unLike(postId, userId);
             return res.status(HttpStatusCode.OK).json({
                 response
             })
         } catch (error) {
-            console.log(error)
+
             return res.status(HttpStatusCode.NOT_FOUND).json({
                 error
             })
@@ -123,7 +121,6 @@ module.exports = {
         try {
             const postId = req.params.id
             const userId = req.body.userId
-            console.log(postId, userId)
             const response = await PostService.likePost(postId, userId);
             return res.status(HttpStatusCode.OK).json({
                 response
@@ -145,20 +142,17 @@ module.exports = {
                 response
             })
         } catch (error) {
-            console.log(error)
             return res.status(HttpStatusCode.NOT_FOUND).json(error)
         }
     }, getPostByUser: async (req, res) => {
         try {
             const userId = req.params.id
-            console.log(userId)
             const response = await PostService.getPostByUser(userId);
 
             return res.status(HttpStatusCode.OK).json({
                 response
             })
         } catch (error) {
-            console.log(error)
             return res.status(HttpStatusCode.NOT_FOUND).json(error)
         }
     }, handleUploadImages: async (req, res) => {
