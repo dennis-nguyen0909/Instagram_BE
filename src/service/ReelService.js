@@ -187,5 +187,29 @@ module.exports = {
 
             }
         })
+    }, getReelByUser: (idUser) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const reels = await Reel.find({ userId: idUser })
+                    .populate("userId", "userName avatar")
+                    .populate("likes", "userName avatar")
+                    .populate('comments.postedBy', 'userName email avatar');
+                if (!reels) {
+                    resolve({
+                        code: 200,
+                        message: "Not found!",
+                    })
+                } else {
+                    resolve({
+                        code: 200,
+                        message: "Find reels success!",
+                        data: reels
+                    })
+                }
+            } catch (error) {
+                reject(error)
+
+            }
+        })
     }
 }

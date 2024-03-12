@@ -67,5 +67,14 @@ module.exports = {
         } catch (error) {
             return res.status(HttpStatusCode.NOT_FOUND).json({ error })
         }
+    }, getReelByUser: async (req, res) => {
+        try {
+            const idUser = req.params.id
+            const response = await ReelService.getReelByUser(idUser);
+            return res.status(HttpStatusCode.OK).json({ response });
+
+        } catch (error) {
+            return res.status(HttpStatusCode.NOT_FOUND).json({ error })
+        }
     }
 }

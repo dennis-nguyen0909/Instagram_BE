@@ -12,6 +12,7 @@ const ReelRouter = (app) => {
     router.get('/get-all', ReelController.handleGetAll);
     router.put('/like/:id', ReelController.handleLikeReel);
     router.put('/comment/:id', ReelController.handleCommentReel);
+    router.get('/get-reel-by-user/:id', ReelController.getReelByUser);
     return app.use('/api/reel', router)
 }
 
